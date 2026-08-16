@@ -264,7 +264,7 @@ tenant-job-scheduler/
 │   │   └── App.jsx
 │   └── package.json
 ├── docker-compose.yml                # PostgreSQL setup
-├── SUMMARY.md                        # This file
+├── README.md                         # This file
 └── run.sh                            # Single-command startup script
 ```
 
