@@ -1,0 +1,24 @@
+package com.scheduler.repository;
+
+import com.scheduler.model.Job;
+import com.scheduler.model.JobStatus;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@Repository
+public interface JobRepository extends JpaRepository<Job, UUID> {
+
+    Optional<Job> findByIdempotencyKey(String idempotencyKey);
+
+    long countByStatus(JobStatus status);
+
+    long countByTenantIdAndStatus(String tenantId, JobStatus status);
+
+    @Query("SELECT j FROM Job j WHERE j.status = :status ORDER BY j.createdAt ASC")
+    List<Job> findPendingJobsOrderedByCreation(JobStatus status);
+}
