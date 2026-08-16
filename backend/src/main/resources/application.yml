@@ -22,6 +22,9 @@ spring:
     baseline-on-migrate: true
     schemas: public
 
+server:
+  port: ${BACKEND_PORT:8080}
+
 scheduler:
   concurrency:
     global-max: 5 #The global-max value should not be over 50 as this is what our current thread pool size is

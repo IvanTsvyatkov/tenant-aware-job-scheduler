@@ -40,7 +40,10 @@ describe('jobApi', () => {
 
 
   it('builds the SSE endpoint URL', () => {
-    expect(jobApi.getSSEUrl()).toBe('http://localhost:8080/jobs/stream')
+    const expectedUrl = import.meta.env.VITE_API_BASE_URL
+      ? `${import.meta.env.VITE_API_BASE_URL}/jobs/stream`
+      : 'http://localhost:8080/jobs/stream'
+    expect(jobApi.getSSEUrl()).toBe(expectedUrl)
   })
 })
 

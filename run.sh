@@ -67,6 +67,26 @@ echo -e "${GREEN}✓ Node.js v$NODE_VERSION found${NC}"
 
 echo ""
 
+# Load environment variables early (needed by docker-compose and all services)
+if [ -f .env ]; then
+    set -a
+    source .env
+    set +a
+    echo -e "${GREEN}✓ Loaded environment variables from .env${NC}"
+else
+    echo -e "${YELLOW}⚠ No .env file found, using defaults${NC}"
+fi
+
+# Set default ports if not defined
+BACKEND_PORT=${BACKEND_PORT:-8080}
+FRONTEND_PORT=${FRONTEND_PORT:-5173}
+POSTGRES_PORT=${POSTGRES_PORT:-5432}
+
+# Set VITE_API_BASE_URL for frontend (Vite requires VITE_ prefix)
+export VITE_API_BASE_URL=${VITE_API_BASE_URL:-http://localhost:${BACKEND_PORT}}
+
+echo ""
+
 # Trap to cleanup on exit
 trap cleanup EXIT INT TERM
 
@@ -117,27 +137,16 @@ echo ""
 echo -e "${BLUE}Starting Backend (Spring Boot)...${NC}"
 cd backend
 
-# Load environment variables if .env exists
-if [ -f ../.env ]; then
-    set -a
-    source ../.env
-    set +a
-    echo "Loaded environment variables from .env"
-fi
-
 # Start backend in background and capture PID
-# - fork=false keeps the app in Maven's JVM
-# - nohup + `< /dev/null` fully detaches the process from this terminal so it
-#   has no controlling tty to write to; ALL output goes only to backend.log.
 nohup mvn spring-boot:run > ../backend.log 2>&1 &
 BACKEND_PID=$!
 
 # Wait for backend to be ready
 echo "Waiting for backend to start..."
 for i in {1..60}; do
-    if curl -s http://localhost:8080/actuator/health > /dev/null 2>&1 || \
-       curl -s http://localhost:8080/jobs > /dev/null 2>&1; then
-        echo -e "${GREEN}✓ Backend is ready at http://localhost:8080${NC}"
+    if curl -s http://localhost:${BACKEND_PORT}/actuator/health > /dev/null 2>&1 || \
+       curl -s http://localhost:${BACKEND_PORT}/jobs > /dev/null 2>&1; then
+        echo -e "${GREEN}✓ Backend is ready at http://localhost:${BACKEND_PORT}${NC}"
         break
     fi
     if [ $i -eq 60 ]; then
@@ -168,8 +177,8 @@ FRONTEND_PID=$!
 # Wait for frontend to be ready
 echo "Waiting for frontend to start..."
 for i in {1..30}; do
-    if curl -s http://localhost:5173 > /dev/null 2>&1; then
-        echo -e "${GREEN}✓ Frontend is ready at http://localhost:5173${NC}"
+    if curl -s http://localhost:${FRONTEND_PORT} > /dev/null 2>&1; then
+        echo -e "${GREEN}✓ Frontend is ready at http://localhost:${FRONTEND_PORT}${NC}"
         break
     fi
     if [ $i -eq 30 ]; then
@@ -189,9 +198,9 @@ echo -e "${GREEN}✓ All services started successfully!${NC}"
 echo -e "${GREEN}========================================${NC}"
 echo ""
 echo -e "${BLUE}Access the application:${NC}"
-echo -e "  Frontend:  ${GREEN}http://localhost:5173${NC}"
-echo -e "  Backend:   ${GREEN}http://localhost:8080${NC}"
-echo -e "  Database:  ${GREEN}localhost:5432${NC}"
+echo -e "  Frontend:  ${GREEN}http://localhost:${FRONTEND_PORT}${NC}"
+echo -e "  Backend:   ${GREEN}http://localhost:${BACKEND_PORT}${NC}"
+echo -e "  Database:  ${GREEN}localhost:${POSTGRES_PORT}${NC}"
 echo ""
 echo -e "${BLUE}Logs:${NC}"
 echo -e "  Backend:   tail -f backend.log"

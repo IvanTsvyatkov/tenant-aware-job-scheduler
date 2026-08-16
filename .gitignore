@@ -12,7 +12,6 @@ backend/*.log
 frontend/node_modules/
 frontend/dist/
 frontend/.vite/
-frontend/.env
 frontend/coverage/
 
 # IDE
