@@ -1,6 +1,41 @@
 # Project Summary: Tenant-Aware Job Scheduler
 
-### What Was Built
+## Table of Contents
+
+- [What Was Built](#what-was-built)
+- [Core Features Delivered](#core-features-delivered)
+  - [1. Multi-Tenancy](#1-multi-tenancy-)
+  - [2. Job Management API](#2-job-management-api-)
+  - [3. Concurrency Control](#3-concurrency-control-)
+  - [4. Idempotency](#4-idempotency-)
+  - [5. Job Lifecycle](#5-job-lifecycle-)
+  - [6. Real-Time Updates](#6-real-time-updates-)
+  - [7. React UI](#7-react-ui-)
+  - [8. Testing](#8-testing-)
+- [Architecture Decisions](#architecture-decisions)
+  - [1. Schema-per-Tenant](#1-schema-per-tenant)
+  - [2. Optimistic Locking](#2-optimistic-locking)
+  - [3. In-Memory Semaphores](#3-in-memory-semaphores)
+  - [4. On-Demand Schema Creation](#4-on-demand-schema-creation)
+  - [5. Fair Scheduling Algorithm](#5-fair-scheduling-algorithm)
+- [Project Structure](#project-structure)
+- [Key Files](#key-files)
+  - [Backend](#backend)
+  - [Frontend](#frontend)
+  - [Configuration](#configuration)
+- [Running the Application](#running-the-application)
+  - [Quick Start (Single Command)](#quick-start-single-command)
+  - [Manual Start (3 Terminals)](#manual-start-3-terminals)
+  - [Verify Multi-Tenancy](#verify-multi-tenancy)
+- [Testing](#testing)
+  - [Run All Tests](#run-all-tests)
+  - [Generate Coverage Report](#generate-coverage-report)
+- [What Would Come Next](#what-would-come-next)
+  - [With More Time (Next 8 Hours)](#with-more-time-next-8-hours)
+
+---
+
+## What Was Built
 
 A full-stack multi-tenant job scheduling service with:
 - **Backend**: Java 17, Spring Boot 3.2.5, Spring Data JPA
